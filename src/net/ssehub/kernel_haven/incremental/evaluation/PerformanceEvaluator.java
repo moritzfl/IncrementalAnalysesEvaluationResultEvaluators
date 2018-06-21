@@ -9,10 +9,12 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +42,8 @@ public class PerformanceEvaluator {
 	/**
 	 * Instantiates a new performance evaluator.
 	 *
-	 * @param baseDir the base dir
+	 * @param baseDir
+	 *            the base dir
 	 */
 	public PerformanceEvaluator(Path baseDir) {
 		super();
@@ -50,10 +53,11 @@ public class PerformanceEvaluator {
 	/**
 	 * The main method.
 	 *
-	 * @param args the arguments
+	 * @param args
+	 *            the arguments
 	 */
 	public static void main(String args[]) {
-		Path baseDir = Paths.get("/Users/moritz/Desktop/results-variability-2nd");
+		Path baseDir = Paths.get("/Users/moritz/Desktop/results-change-only-2nd");
 
 		// Parse arguments
 		if (args.length == 1) {
@@ -79,17 +83,94 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Calculating comparison between incremental and reference");
 		logWhichOneWasFaster(incrementalResults, referenceResults);
 
+		LOGGER.logInfo("Execution times for every incremental iteration:");
+		logExecutionTimes(incrementalResults);
+
+		LOGGER.logInfo("Execution times for every reference iteration:");
+		logExecutionTimes(referenceResults);
+
+		
+		LOGGER.logInfo("Logging data for partial analyses in incremental:");
+		logPartialExecutionData(incrementalResults);
+		
+		
+	}
+	
+	private static void logPartialExecutionData(Map<String, PerformanceResult> results) {
+		List<String> keySet = new ArrayList<String>(results.keySet());
+		Collections.sort(keySet);
+		
+		long longerThan60sec = 0;
+		long longestPartial = 0;
+		long accumulatdPartial = 0;
+		long totalPartialCount = 0;
+		
+		
+		for (String key : keySet) {
+			PerformanceResult performanceResult = results.get(key);
+			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+					performanceResult.getEndTime());
+			
+			if (performanceResult.isPartialAnalysis()) {
+				totalPartialCount++;
+				accumulatdPartial += currentDuration;
+				if (currentDuration > longestPartial) {
+					longestPartial = currentDuration;
+				}
+				
+				if (currentDuration > 60) {
+					longerThan60sec++;
+				}
+			}
+		}
+		
+		double avgPartialDuration = ((double) accumulatdPartial)/((double) totalPartialCount);
+		
+		LOGGER.logInfo("PartialAnalysisCount: " + totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration" + avgPartialDuration +"s LongestPartialDuration: " + longestPartial + "s");
+		
+	}
+
+	private static void logExecutionTimes(Map<String, PerformanceResult> results) {
+		StringJoiner times = new StringJoiner(";");
+		List<String> keySet = new ArrayList<String>(results.keySet());
+		Collections.sort(keySet);
+		for (String key : keySet) {
+			PerformanceResult performanceResult = results.get(key);
+			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+					performanceResult.getEndTime());
+			times.add(Long.toString(currentDuration));
+		}
+
+		LOGGER.logInfo("Execution times: " + times.toString());
+	}
+
+	private static long getTimeInSeconds(LocalDateTime start, LocalDateTime end) {
+		long duration = 0;
+		if (start != null && end != null && start.isBefore(end)) {
+			duration = ChronoUnit.SECONDS.between(start, end);
+		}
+		return duration;
 	}
 
 	/**
 	 * Log generic durations.
 	 *
-	 * @param results the results
+	 * @param results
+	 *            the results
 	 */
 	private static void logGenericDurations(Map<String, PerformanceResult> results) {
 
 		long accumulatedDuration = 0;
-		Set<String> keySet = results.keySet();
+		List<String> keySet = new ArrayList<String>(results.keySet());
+		Collections.sort(keySet);
+
+		long accumulatedSetupDuration = 0;
+		long accumulatedExtractionDuration = 0;
+		long accumulatedOverlap = 0;
+		long accumulatedAnalysisDuration = 0;
+		long accumulatedTimeBetweenExtractionAndAnalysis = 0;
+		long accumulatedPreparationTime = 0;
+
 		int numberOfValues = keySet.size();
 		long maxDuration = 0;
 		long minDuration = -1;
@@ -97,9 +178,32 @@ public class PerformanceEvaluator {
 		PerformanceResult maxResult = null;
 		PerformanceResult minResult = null;
 
-		for (String key : results.keySet()) {
+		for (String key : keySet) {
 			PerformanceResult incrResult = results.get(key);
-			long currentDuration = ChronoUnit.SECONDS.between(incrResult.getStartTime(), incrResult.getEndTime());
+			long currentDuration = getTimeInSeconds(incrResult.getStartTime(), incrResult.getEndTime());
+			long currentSetupDuration = getTimeInSeconds(incrResult.getStartTime(),
+					incrResult.getStartExtractionPhase());
+			long currentPreparationDuration = getTimeInSeconds(incrResult.getStartPreparationPhase(),
+					incrResult.getEndPreparationPhase());
+
+			long currentExtractionDuration = getTimeInSeconds(incrResult.getStartExtractionPhase(),
+					incrResult.getEndExtractionPhase());
+			// TODO: only if extraction starts after analysis
+			long currentTimeBetweenExtractionAndAnalysis = getTimeInSeconds(incrResult.getEndExtractionPhase(),
+					incrResult.getStartAnalysisPhase());
+
+			long currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
+					incrResult.getEndAnalysisPhase());
+
+			long currentOverlap = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
+					incrResult.getEndExtractionPhase());
+
+			accumulatedSetupDuration += currentSetupDuration;
+			accumulatedExtractionDuration += currentExtractionDuration;
+			accumulatedOverlap += currentOverlap;
+			accumulatedAnalysisDuration += currentAnalysisTime;
+			accumulatedTimeBetweenExtractionAndAnalysis += currentTimeBetweenExtractionAndAnalysis;
+			accumulatedPreparationTime += currentPreparationDuration;
 			accumulatedDuration += currentDuration;
 			if (maxDuration < currentDuration) {
 				maxDuration = currentDuration;
@@ -121,13 +225,34 @@ public class PerformanceEvaluator {
 				+ minResult.getDiffFileName());
 		LOGGER.logInfo("Accumulated duration: " + (int) Math.floor(accumulatedDuration / 60) + "min "
 				+ accumulatedDuration % 60 + "s");
+
+		LOGGER.logInfo("Accumulated values: setup=" + accumulatedSetupDuration + " preparation="
+				+ accumulatedPreparationTime + " extraction=" + accumulatedExtractionDuration + " analysis="
+				+ accumulatedAnalysisDuration + " overlap=" + accumulatedOverlap + " post-extraction="
+				+ accumulatedTimeBetweenExtractionAndAnalysis);
+
+		LOGGER.logInfo("Average values: setup=" + ((double) accumulatedSetupDuration) / ((double)numberOfValues) + " preparation="
+				+ ((double) accumulatedPreparationTime) / ((double) numberOfValues) + " extraction="
+				+ ((double) accumulatedExtractionDuration) / ((double) numberOfValues) + " analysis="
+				+ ((double) accumulatedAnalysisDuration) / ((double) numberOfValues)+ " overlap=" + ((double) accumulatedOverlap) / ((double) numberOfValues)
+				+ " post-extraction=" + ((double) accumulatedTimeBetweenExtractionAndAnalysis) / ((double) numberOfValues));
+
+	}
+
+	private static double getDeviationInPercent(long thisValue, long thatValue) {
+		double thisValueDouble = thisValue;
+		double thatValueDouble = thatValue;
+		double percent = 100d - thisValueDouble / thatValueDouble * 100d;
+		return percent;
 	}
 
 	/**
 	 * Log which one was faster.
 	 *
-	 * @param incrementalResults the incremental results
-	 * @param referenceResults the reference results
+	 * @param incrementalResults
+	 *            the incremental results
+	 * @param referenceResults
+	 *            the reference results
 	 */
 	private static void logWhichOneWasFaster(Map<String, PerformanceResult> incrementalResults,
 			Map<String, PerformanceResult> referenceResults) {
@@ -145,11 +270,11 @@ public class PerformanceEvaluator {
 
 			if (refDuration < incrDuration) {
 				fasterReference.add(key + "(difference: " + (incrDuration - refDuration) + ", "
-						+ (100l - refDuration / incrDuration * 100l) + "% )");
+						+ Double.toString(getDeviationInPercent(refDuration, incrDuration)) + "% )");
 				refFaster++;
 			} else if (incrDuration < refDuration) {
 				fasterIncr.add(key + "(difference: " + (refDuration - incrDuration) + ", "
-						+ (100l - incrDuration / refDuration * 100l) + "% )");
+						+ Double.toString(getDeviationInPercent(incrDuration, refDuration)) + "% )");
 				incrFaster++;
 			}
 		}
@@ -157,14 +282,15 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Number of times that reference was faster: " + refFaster);
 		LOGGER.logInfo("Diffs where reference was faster: " + fasterReference);
 		LOGGER.logInfo("Number of times that incremental was faster: " + incrFaster);
-		LOGGER.logInfo("Diffs where reference was faster: " + fasterReference);
+		LOGGER.logInfo("Diffs where incemental was faster: " + fasterIncr);
 		LOGGER.logInfo("Number of executions: " + referenceResults.keySet().size());
 	}
 
 	/**
 	 * Generate results.
 	 *
-	 * @param relativeLogDir the relative log dir
+	 * @param relativeLogDir
+	 *            the relative log dir
 	 * @return the map
 	 */
 	private Map<String, PerformanceResult> generateResults(Path relativeLogDir) {
@@ -186,7 +312,8 @@ public class PerformanceEvaluator {
 	/**
 	 * Gets the diff file name.
 	 *
-	 * @param file the file
+	 * @param file
+	 *            the file
 	 * @return the diff file name
 	 */
 	public String getDiffFileName(File file) {
@@ -239,6 +366,7 @@ public class PerformanceEvaluator {
 			LocalDateTime startAnalysisPhase = null;
 			LocalDateTime endAnalysisPhase = null;
 			LocalDateTime endTime = null;
+			boolean partial = false;
 
 			for (String nextLine; (nextLine = br.readLine()) != null;) {
 				// Update the time to always reflect the most recent timestamp
@@ -247,7 +375,9 @@ public class PerformanceEvaluator {
 					currentTime = timeFromCurrentLine;
 				}
 
-				if (currentLine.contains("[Setup] Running preparation")) {
+				if (currentLine.contains("IncrementalDeadCodeAnalysis will run on the updated parts of the code-model only")) {
+					partial = true;
+				} else if (currentLine.contains("[Setup] Running preparation")) {
 					startPreparationPhase = currentTime;
 				} else if (currentLine.contains("IncrementalPreparation duration:")) {
 					finishPreparationPhase = currentTime;
@@ -256,7 +386,8 @@ public class PerformanceEvaluator {
 				} else if (currentLine.contains("ExtractorThread] All threads done")) {
 					endExtractionPhase = currentTime;
 				} else if (startAnalysisPhase == null
-						&& currentLine.contains("[info   ] [OrderPreservingParallelizer-Worker")) {
+						&& (currentLine.contains("[info   ] [OrderPreservingParallelizer-Worker")
+								|| currentLine.contains("DeadCodeFinder] Couldn't get models"))) {
 					startAnalysisPhase = currentTime;
 				} else if (currentLine.contains("[info   ] [Setup] Analysis has finished")) {
 					endAnalysisPhase = currentTime;
@@ -281,9 +412,10 @@ public class PerformanceEvaluator {
 			result.setEndExtractionPhase(endExtractionPhase);
 			result.setStartPreparationPhase(startPreparationPhase);
 			result.setStartExtractionPhase(startExtractionPhase);
-			result.setFinishPreparationPhase(finishPreparationPhase);
+			result.setEndPreparationPhase(finishPreparationPhase);
 			result.setEndTime(endTime);
 			result.setStartTime(startTime);
+			result.setPartialAnalysis(partial);
 
 		}
 

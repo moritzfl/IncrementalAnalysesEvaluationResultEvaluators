@@ -8,8 +8,12 @@ import java.time.LocalDateTime;
  */
 public class PerformanceResult {
 	
+	
+	private boolean partialAnalysis = false;
+	
 	/** The start preparation phase. */
 	private LocalDateTime startPreparationPhase = null;
+
 	
 	/** The finish preparation phase. */
 	private LocalDateTime finishPreparationPhase = null;
@@ -68,7 +72,7 @@ public class PerformanceResult {
 	 *
 	 * @return the finish preparation phase
 	 */
-	public LocalDateTime getFinishPreparationPhase() {
+	public LocalDateTime getEndPreparationPhase() {
 		return finishPreparationPhase;
 	}
 	
@@ -77,7 +81,7 @@ public class PerformanceResult {
 	 *
 	 * @param finishPreparationPhase the new finish preparation phase
 	 */
-	public void setFinishPreparationPhase(LocalDateTime finishPreparationPhase) {
+	public void setEndPreparationPhase(LocalDateTime finishPreparationPhase) {
 		this.finishPreparationPhase = finishPreparationPhase;
 	}
 	
@@ -220,6 +224,18 @@ public class PerformanceResult {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	public boolean isPartialAnalysis() {
+		return partialAnalysis;
+	}
+
+
+	public void setPartialAnalysis(boolean partialAnalysis) {
+		this.partialAnalysis = partialAnalysis;
+	}
+
+
 
 
 }
