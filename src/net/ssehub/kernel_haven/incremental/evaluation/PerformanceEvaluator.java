@@ -309,8 +309,6 @@ public class PerformanceEvaluator {
 		int incrFaster = 0;
 		StringJoiner fasterReference = new StringJoiner(", ");
 		StringJoiner fasterIncr = new StringJoiner(", ");
-		int fullAnalysisCount = 0;
-		int fullAnalysisRefFasterThanIncr = 0;
 
 		for (String key : referenceResults.keySet()) {
 			PerformanceResult incrResult = incrementalResults.get(key);
@@ -327,15 +325,6 @@ public class PerformanceEvaluator {
 						+ Double.toString(getDeviationInPercent(incrDuration, refDuration)) + "% )");
 				incrFaster++;
 			}
-
-			if (!refResult.isPartialAnalysis()) {
-				fullAnalysisCount++;
-
-				if (incrDuration > refDuration) {
-					fullAnalysisRefFasterThanIncr++;
-				}
-			}
-
 		}
 
 		LOGGER.logInfo("Number of times that reference was faster: " + refFaster);
@@ -343,7 +332,6 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Number of times that incremental was faster: " + incrFaster);
 		LOGGER.logInfo("Diffs where incemental was faster: " + fasterIncr);
 		LOGGER.logInfo("Number of executions: " + referenceResults.keySet().size());
-		LOGGER.logInfo("Number of full analyses done by ref (only makes sense when comparing 2 incremental analysis resuls) where ref was faster than incr" + fullAnalysisRefFasterThanIncr + "/" + fullAnalysisCount);
 	}
 
 	/**
