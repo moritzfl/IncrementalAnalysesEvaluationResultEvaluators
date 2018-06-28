@@ -62,7 +62,7 @@ java -jar QualityEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution" > 
 
 ### PerformanceEvaluator
 
-Executing PerformanceEvaluator compares the performance of the one analysis execution with a reference execution. 
+Executing PerformanceEvaluator compares the performance of the one analysis execution with a reference execution. As the performance analysis is performed by extracting information from log files which get rather large, the evaluation process takes a couple of minutes.
 
 
 The execution of the PerformanceEvaluator can be achieved through a command line call:
