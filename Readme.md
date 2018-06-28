@@ -1,6 +1,17 @@
+# IncrementalAnalysesHelpers
+
+This repository contains tools related to [IncrementalAnalysesInfrastructure](https://github.com/KernelHaven/IncrementalAnalysesInfrastructure) and [IncrementalAnalysesEvaluation](https://github.com/moritzfl/IncrementalAnalysesEvaluation)
+
+The tools included are:
+- DiffGenerator
+- QualityEvaluator
+- PerformanceEvaluator
+
+
 ## DiffGenerator
 
 This tool can be used to generate diff files representing every commit in a given range to a repository that you have checked out on your locally.
+
 To launch it use:
 ```
 java -jar DiffGenerator.jar
@@ -43,7 +54,7 @@ java -jar QualityEvaluator.jar -v "/path/to/rootfolder_of_kernelhaven_execution"
 java -jar QualityEvaluator.jar -variability "/path/to/rootfolder_of_kernelhaven_execution"
 ```
 
-In order to write the evaluation result to your filesystem, use ``> quality.log`` on unix systems:
+In order to write the evaluation result to your filesystem, use ``> quality.log`` on Unix systems:
 
 ```
 java -jar QualityEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution" > quality.log
@@ -51,4 +62,17 @@ java -jar QualityEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution" > 
 
 ### PerformanceEvaluator
 
-TODO
+Executing PerformanceEvaluator compares the performance of the one analysis execution with a reference execution. 
+
+
+The execution of the PerformanceEvaluator can be achieved through a command line call:
+
+```
+java -jar PerformanceEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution"
+```
+
+In order to write the evaluation result to your filesystem, use ``> performance.log`` on Unix systems:
+
+```
+java -jar PerformanceEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution" > performance.log
+```
