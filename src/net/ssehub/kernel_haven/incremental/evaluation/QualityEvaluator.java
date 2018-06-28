@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.ssehub.kernel_haven.util.Logger;
 
@@ -292,7 +294,8 @@ public class QualityEvaluator {
 
 	/**
 	 * Removes the non variability lines by looking at the presence condition.
-	 * Discards lines where the presence Condition does not contain CONFIG_.
+	 * Discards lines where the presence Condition does not contain CONFIG_ at the
+	 * beginning of a variable.
 	 *
 	 * @param lines
 	 *            the lines
@@ -300,12 +303,19 @@ public class QualityEvaluator {
 	 */
 	private List<String> removeNonVariabilityLines(List<String> lines) {
 		List<String> newList = new ArrayList<String>();
+		Pattern pattern = Pattern.compile("(?<!(_|\\w|\\d))CONFIG_");
 		for (String entry : lines) {
 			String[] entryParts = entry.split(";");
 			String presenceCondition = entryParts[entryParts.length - 1];
-			if (presenceCondition.contains("CONFIG_")) {
+			String filePc = entryParts[1];
+			Matcher matcher = pattern.matcher(presenceCondition);
+			Matcher filePcMatcher = pattern.matcher(filePc);
+			boolean pcFound = matcher.find() ;
+			boolean filePcFound = filePcMatcher.find();
+			if (pcFound || (filePcFound && presenceCondition.isEmpty())) {
 				newList.add(entry);
 			}
+			
 		}
 		return newList;
 	}

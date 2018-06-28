@@ -2,9 +2,9 @@ package net.ssehub.kernel_haven.incremental.evaluation;
 
 import java.time.LocalDateTime;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PerformanceResult.
+ * 
  */
 public class PerformanceResult {
 	

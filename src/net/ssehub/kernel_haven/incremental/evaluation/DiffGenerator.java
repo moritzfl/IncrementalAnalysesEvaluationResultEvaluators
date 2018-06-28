@@ -67,9 +67,9 @@ public class DiffGenerator {
 
 		if (stderr != null && !stderr.equals("")) {
 			if (!success) {
-				LOGGER.logError(("git apply stderr:\n" + stderr).split("\n"));
+				LOGGER.logError(("git diff stderr:\n" + stderr).split("\n"));
 			} else {
-				LOGGER.logDebug(("git apply stderr:\n" + stderr).split("\n"));
+				LOGGER.logDebug(("git diff stderr:\n" + stderr).split("\n"));
 			}
 		}
 
@@ -124,9 +124,9 @@ public class DiffGenerator {
 
 		boolean success = false;
 		try {
-			success = Util.executeProcess(processBuilder, "git diff", stdoutStream, stderrStream, 0);
+			success = Util.executeProcess(processBuilder, "git log", stdoutStream, stderrStream, 0);
 		} catch (IOException e) {
-			LOGGER.logException("Could not merge changes", e);
+			LOGGER.logException("Could not list commit hashes in given range", e);
 		}
 
 		String stderr = stderrStream.toString();
@@ -134,9 +134,9 @@ public class DiffGenerator {
 
 		if (stderr != null && !stderr.equals("")) {
 			if (!success) {
-				LOGGER.logError(("git apply stderr:\n" + stderr).split("\n"));
+				LOGGER.logError(("git log stderr:\n" + stderr).split("\n"));
 			} else {
-				LOGGER.logDebug(("git apply stderr:\n" + stderr).split("\n"));
+				LOGGER.logDebug(("git log stderr:\n" + stderr).split("\n"));
 			}
 		}
 
