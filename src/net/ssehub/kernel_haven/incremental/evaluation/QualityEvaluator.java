@@ -17,9 +17,11 @@ import java.util.regex.Pattern;
 
 import net.ssehub.kernel_haven.util.Logger;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class Evaluator.
+ * Class used to evaluate the quality (content/found dead code blocks) of
+ * results produced by IncrementalAnalysesEvaluation.
+ * 
+ * @author moritz
  */
 public class QualityEvaluator {
 
@@ -44,7 +46,7 @@ public class QualityEvaluator {
 	/** The reference results. */
 	private Map<String, QualityResult> referenceResults = new HashMap<String, QualityResult>();
 
-	/** The Constant LOGGER. */
+	/** The Logger. */
 	private static final Logger LOGGER = Logger.get();
 
 	/** The variability evaluation mode. */
@@ -129,7 +131,8 @@ public class QualityEvaluator {
 	}
 
 	/**
-	 * Compare for input diff name.
+	 * Compare results for the name of a git-diff file that was used as input within
+	 * IncrementalAnalysesEvalauation.
 	 *
 	 * @param diffFileName
 	 *            the diff file name
@@ -193,7 +196,7 @@ public class QualityEvaluator {
 	}
 
 	/**
-	 * Content identical.
+	 * Checks if content is considered identical.
 	 *
 	 * @param referenceResult
 	 *            the reference result
@@ -220,7 +223,7 @@ public class QualityEvaluator {
 	}
 
 	/**
-	 * Content equivalent.
+	 * Checks if content is considered equivalent.
 	 *
 	 * @param referenceResult
 	 *            the reference result
@@ -294,7 +297,7 @@ public class QualityEvaluator {
 
 	/**
 	 * Removes the non variability lines by looking at the presence condition.
-	 * Discards lines where the presence Condition does not contain CONFIG_ at the
+	 * Discards lines where the presence condition does not contain CONFIG_ at the
 	 * beginning of a variable.
 	 *
 	 * @param lines
@@ -310,12 +313,12 @@ public class QualityEvaluator {
 			String filePc = entryParts[1];
 			Matcher matcher = pattern.matcher(presenceCondition);
 			Matcher filePcMatcher = pattern.matcher(filePc);
-			boolean pcFound = matcher.find() ;
+			boolean pcFound = matcher.find();
 			boolean filePcFound = filePcMatcher.find();
 			if (pcFound || (filePcFound && presenceCondition.isEmpty())) {
 				newList.add(entry);
 			}
-			
+
 		}
 		return newList;
 	}

@@ -1,22 +1,26 @@
 package net.ssehub.kernel_haven.incremental.evaluation;
 
 /**
- * The Class QualityResult.
+ * Storage class for quality results.
+ * 
+ * @author moritz
  */
 public class QualityResult {
 
 	/**
-	 * The Enum ResultQuality.
+	 * enum used to indicate the quality of the result when compared against a
+	 * baseline.
+	 * 
 	 */
 	enum ResultQuality {
 
-		/** The equivalent. */
+		/** signals that a result is equivalent compared to a baseline result. */
 		EQUIVALENT,
-		/** The same. */
+		/** signals that a result is the same compared to a baseline result. */
 		SAME,
-		/** The different. */
+		/** signals that a result is the different compared to a baseline result. */
 		DIFFERENT,
-		/** The baseline. */
+		/** signals that a result was used as baseline */
 		BASELINE
 	}
 
@@ -52,7 +56,7 @@ public class QualityResult {
 	 * @param resultQuality
 	 *            the new result quality
 	 */
-	public void setResultQuality(ResultQuality resultQuality) {
+	public void setResultQuality(final ResultQuality resultQuality) {
 		this.resultQuality = resultQuality;
 	}
 

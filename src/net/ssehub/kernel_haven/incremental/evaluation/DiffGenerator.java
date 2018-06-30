@@ -14,39 +14,46 @@ import net.ssehub.kernel_haven.util.Logger;
 import net.ssehub.kernel_haven.util.Util;
 
 /**
- * The Class DiffGenerator.
+ * Class that helps with generating a set of diff files for a given commit
+ * range.
+ * @author moritz
  */
 public class DiffGenerator {
 
 	/** The Constant EMPTY_REPOSITORY_HASH. */
 	public static final String EMPTY_REPOSITORY_HASH = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
-	
+
 	/** The Constant CURRENT_COMMIT_HASH. */
 	public static final String CURRENT_COMMIT_HASH = "HEAD";
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = Logger.get();
-	
+
 	/** The git repository. */
 	private File gitRepository;
 
 	/**
 	 * Instantiates a new diff generator.
 	 *
-	 * @param gitRepository the git repository
+	 * @param gitRepository
+	 *            the git repository
 	 */
-	public DiffGenerator(File gitRepository) {
+	public DiffGenerator(final File gitRepository) {
 		this.gitRepository = gitRepository;
 	}
 
 	/**
 	 * Generate diff.
 	 *
-	 * @param oldCommitHash the old commit hash
-	 * @param newCommitHash the new commit hash
-	 * @param resultFile the result file
+	 * @param oldCommitHash
+	 *            the old commit hash
+	 * @param newCommitHash
+	 *            the new commit hash
+	 * @param resultFile
+	 *            the result file
 	 * @return true, if successful
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean generateDiff(String oldCommitHash, String newCommitHash, File resultFile) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder("git", "diff", "--no-renames", "--binary", oldCommitHash,
@@ -79,10 +86,13 @@ public class DiffGenerator {
 	/**
 	 * Generate diffs.
 	 *
-	 * @param commits the commits
-	 * @param outputDir the output dir
+	 * @param commits
+	 *            the commits
+	 * @param outputDir
+	 *            the output dir
 	 * @return true, if successful
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public boolean generateDiffs(List<String> commits, File outputDir) throws IOException {
 		boolean success = true;
@@ -110,8 +120,10 @@ public class DiffGenerator {
 	/**
 	 * List all commits in range.
 	 *
-	 * @param startCommitHash the start commit hash
-	 * @param endCommitHash the end commit hash
+	 * @param startCommitHash
+	 *            the start commit hash
+	 * @param endCommitHash
+	 *            the end commit hash
 	 * @return the list
 	 */
 	public List<String> listAllCommitsInRange(String startCommitHash, String endCommitHash) {
@@ -155,8 +167,10 @@ public class DiffGenerator {
 	/**
 	 * The main method.
 	 *
-	 * @param args the arguments
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @param args
+	 *            the arguments
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	public static void main(String[] args) throws IOException {
 

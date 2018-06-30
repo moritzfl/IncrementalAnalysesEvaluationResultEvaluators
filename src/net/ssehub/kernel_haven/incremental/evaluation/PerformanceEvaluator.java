@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import net.ssehub.kernel_haven.util.Logger;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class PerformanceEvaluator.
  */
@@ -81,7 +82,6 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Calculating times for reference results");
 		logGenericDurations(referenceResults);
 
-
 		LOGGER.logInfo("Execution times for every incremental iteration:");
 		logExecutionTimes(incrementalResults);
 
@@ -94,11 +94,15 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Logging data for non partial analyses in incremental:");
 		logNonPartialExecutionData(incrementalResults);
 
-		
 		LOGGER.logInfo("Calculating comparison between incremental and reference");
 		logWhichOneWasFaster(incrementalResults, referenceResults);
 	}
 
+	/**
+	 * Log non partial execution data.
+	 *
+	 * @param results the results
+	 */
 	private static void logNonPartialExecutionData(Map<String, PerformanceResult> results) {
 		List<String> keySet = new ArrayList<String>(results.keySet());
 		Collections.sort(keySet);
@@ -139,6 +143,11 @@ public class PerformanceEvaluator {
 
 	}
 
+	/**
+	 * Log partial execution data.
+	 *
+	 * @param results the results
+	 */
 	private static void logPartialExecutionData(Map<String, PerformanceResult> results) {
 		List<String> keySet = new ArrayList<String>(results.keySet());
 		Collections.sort(keySet);
@@ -174,6 +183,11 @@ public class PerformanceEvaluator {
 
 	}
 
+	/**
+	 * Log execution times.
+	 *
+	 * @param results the results
+	 */
 	private static void logExecutionTimes(Map<String, PerformanceResult> results) {
 		StringJoiner times = new StringJoiner(";");
 		List<String> keySet = new ArrayList<String>(results.keySet());
@@ -181,7 +195,7 @@ public class PerformanceEvaluator {
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
 			if (performanceResult == null) {
-				LOGGER.logError("Performance result for " + key + " was null" );
+				LOGGER.logError("Performance result for " + key + " was null");
 			}
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
@@ -191,6 +205,14 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("Execution times: " + times.toString());
 	}
 
+	/**
+	 * Gets duration of the interval between start and end in seconds. 
+	 * Returns 0 if start was before end.
+	 *
+	 * @param start the start
+	 * @param end the end
+	 * @return the time in seconds
+	 */
 	private static long getTimeInSeconds(LocalDateTime start, LocalDateTime end) {
 		long duration = 0;
 		if (start != null && end != null && start.isBefore(end)) {
@@ -200,7 +222,7 @@ public class PerformanceEvaluator {
 	}
 
 	/**
-	 * Log generic durations.
+	 * Logs generic durations for a given result set.
 	 *
 	 * @param results
 	 *            the results
@@ -287,6 +309,13 @@ public class PerformanceEvaluator {
 
 	}
 
+	/**
+	 * Gets the deviation between two long values in percent.
+	 *
+	 * @param thisValue the this value
+	 * @param thatValue the that value
+	 * @return the deviation in percent
+	 */
 	private static double getDeviationInPercent(long thisValue, long thatValue) {
 		double thisValueDouble = thisValue;
 		double thatValueDouble = thatValue;
@@ -392,7 +421,7 @@ public class PerformanceEvaluator {
 	}
 
 	/**
-	 * Extract times.
+	 * Extract times from a single file and write them to the result object.
 	 *
 	 * @param logFile
 	 *            the log file
