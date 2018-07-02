@@ -22,11 +22,8 @@ import net.ssehub.kernel_haven.util.Util;
 public class DiffGenerator {
 
     /** The Constant EMPTY_REPOSITORY_HASH. */
-    public static final String EMPTY_REPOSITORY_HASH =
+    private static final String EMPTY_REPOSITORY_HASH =
         "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
-
-    /** The Constant CURRENT_COMMIT_HASH. */
-    public static final String CURRENT_COMMIT_HASH = "HEAD";
 
     /** The Constant LOGGER. */
     private static final Logger LOGGER = Logger.get();
