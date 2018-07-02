@@ -162,17 +162,22 @@ public class DiffGenerator {
             }
         }
 
-        List<String> cleanedcommitLines = null;
+        List<String> cleanedCommitLines = null;
         if (success) {
             List<String> commits = Arrays.asList(stdout.split("\n"));
             Collections.reverse(commits);
 
-            List<String> cleanedCommitLines = new ArrayList<String>();
-            commits.forEach(commit -> cleanedCommitLines
-                .add(commit.substring(0, EMPTY_REPOSITORY_HASH.length())));
+            cleanedCommitLines = new ArrayList<String>();
 
+            for (String commit : commits) {
+                cleanedCommitLines
+                    .add(commit.substring(0, EMPTY_REPOSITORY_HASH.length()));
+            }
+
+        } else {
+            LOGGER.logError("Could not list commit hashes in given range");
         }
-        return cleanedcommitLines;
+        return cleanedCommitLines;
 
     }
 
@@ -210,6 +215,8 @@ public class DiffGenerator {
         System.out.println("Creating list of commits ...");
         List<String> commits =
             diffGen.listAllCommitsInRange(commitStart, commitEnd);
+        System.out.println("List of commits in given range:"
+            + Arrays.toString(commits.toArray()));
         List<String> commitsWithEmptyStart = new ArrayList<String>();
         commitsWithEmptyStart.add(EMPTY_REPOSITORY_HASH);
 
@@ -217,7 +224,7 @@ public class DiffGenerator {
 
         System.out.println("Generating diffs for commits ...");
         diffGen.generateDiffs(commitsWithEmptyStart, outputDir);
-
+        System.out.println("Finished!");
         scanner.close();
     }
 
