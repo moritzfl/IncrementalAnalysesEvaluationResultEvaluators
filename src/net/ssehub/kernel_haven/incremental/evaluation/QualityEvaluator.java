@@ -134,8 +134,10 @@ public class QualityEvaluator {
         List<String> diffFileNames = new ArrayList<String>();
         for (File file : baseDir.resolve(RESULTS_REFERENCE_DIR).toFile()
             .listFiles()) {
-            diffFileNames.add(file.getName().substring("output-".length(),
-                file.getName().length() - ".csv".length()));
+            if (file.getName().startsWith("output-")) {
+                diffFileNames.add(file.getName().substring("output-".length(),
+                    file.getName().length() - ".csv".length()));
+            }
         }
 
         return diffFileNames;
@@ -242,8 +244,12 @@ public class QualityEvaluator {
         referenceLines = Files.readAllLines(referenceResult.toPath());
         incrementalLines = Files.readAllLines(incrementalResult.toPath());
 
-        previousReferenceLines =
-            Files.readAllLines(previousReferenceResult.toPath());
+        if (previousReferenceResult != null) {
+            previousReferenceLines =
+                Files.readAllLines(previousReferenceResult.toPath());
+        } else {
+            previousReferenceLines = new ArrayList<String>();
+        }
 
         /*
          * first make sure that the result of the reference analysis contains
@@ -258,9 +264,8 @@ public class QualityEvaluator {
              */
             List<String> referenceChanges =
                 new ArrayList<String>(referenceLines);
-            if (previousReferenceLines != null) {
-                referenceChanges.removeAll(previousReferenceLines);
-            }
+
+            referenceChanges.removeAll(previousReferenceLines);
 
             if (this.variabilityEvaluationMode) {
                 // remove all lines that represent non-variability relevant
