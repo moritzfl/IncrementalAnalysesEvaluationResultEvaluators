@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -197,26 +196,6 @@ public class QualityEvaluator {
     }
 
     /**
-     * Removes the line numbers.
-     *
-     * @param listOfResults
-     *            the list of results
-     * @return the list
-     */
-    private List<String> removeLineNumbers(Collection<String> listOfResults) {
-        List<String> newList = new ArrayList<String>();
-        for (String entry : listOfResults) {
-            String[] entryParts = entry.split(";");
-            if (entryParts.length == 5) {
-                entry =
-                    entryParts[0] + ";" + entryParts[1] + ";" + entryParts[4];
-            }
-            newList.add(entry);
-        }
-        return newList;
-    }
-
-    /**
      * Checks if content is considered identical.
      *
      * @param referenceResult
@@ -233,15 +212,8 @@ public class QualityEvaluator {
         List<String> referenceLines = null;
         List<String> incrementalLines = null;
 
-        if (this.variabilityEvaluationMode) {
-            referenceLines =
-                removeLineNumbers(Files.readAllLines(referenceResult.toPath()));
-            incrementalLines = removeLineNumbers(
-                Files.readAllLines(incrementalResult.toPath()));
-        } else {
-            referenceLines = Files.readAllLines(referenceResult.toPath());
-            incrementalLines = Files.readAllLines(incrementalResult.toPath());
-        }
+        referenceLines = Files.readAllLines(referenceResult.toPath());
+        incrementalLines = Files.readAllLines(incrementalResult.toPath());
 
         return referenceLines.containsAll(incrementalLines)
             && incrementalLines.containsAll(referenceLines);
@@ -266,22 +238,13 @@ public class QualityEvaluator {
         List<String> referenceLines = null;
         List<String> incrementalLines = null;
         List<String> previousReferenceLines = null;
-        if (this.variabilityEvaluationMode) {
-            referenceLines =
-                removeLineNumbers(Files.readAllLines(referenceResult.toPath()));
-            incrementalLines = removeLineNumbers(
-                Files.readAllLines(incrementalResult.toPath()));
-        } else {
-            referenceLines = Files.readAllLines(referenceResult.toPath());
-            incrementalLines = Files.readAllLines(incrementalResult.toPath());
-        }
-        if (previousReferenceResult != null && this.variabilityEvaluationMode) {
-            previousReferenceLines = removeLineNumbers(
-                Files.readAllLines(previousReferenceResult.toPath()));
-        } else if (previousReferenceResult != null) {
-            previousReferenceLines =
-                Files.readAllLines(previousReferenceResult.toPath());
-        }
+
+        referenceLines = Files.readAllLines(referenceResult.toPath());
+        incrementalLines = Files.readAllLines(incrementalResult.toPath());
+
+        previousReferenceLines =
+            Files.readAllLines(previousReferenceResult.toPath());
+
         /*
          * first make sure that the result of the reference analysis contains
          * all entries that the incremental analysis produced

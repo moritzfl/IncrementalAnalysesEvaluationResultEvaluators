@@ -33,7 +33,7 @@ Change-mode:
 
 
 Variability-mode:
-- The result for a diff file is marked as SAME, if both result files only include identical lines *after* disregarding line-number information
+- The result for a diff file is marked as SAME, if both result files only include identical lines
 - The result for a diff file is marked as EQUIVALENT, if the incremental result contains all variabillity-related lines that were modified compared to results for the previous diff file in the reference execution. However the incremental result must not contain any lines that are not present in the reference result for the same diff file.
 - If the result is neither SAME nor EQUIVALENT, it is marked as DIFFERENT
 
