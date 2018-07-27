@@ -57,7 +57,7 @@ public class DiffGenerator {
     public boolean generateDiff(String oldCommitHash, String newCommitHash,
         File resultFile) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("git", "diff",
-            "--no-renames", "--binary", oldCommitHash, newCommitHash);
+            "--no-renames", "--binary", "-U100000", oldCommitHash, newCommitHash);
         processBuilder.directory(gitRepository);
 
         FileOutputStream stdoutStream = new FileOutputStream(resultFile);
