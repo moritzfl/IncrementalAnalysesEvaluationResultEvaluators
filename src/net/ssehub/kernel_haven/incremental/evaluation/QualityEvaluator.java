@@ -41,6 +41,9 @@ public class QualityEvaluator {
     /** The Logger. */
     private static final Logger LOGGER = Logger.get();
 
+    private static final String LOG_LINE_UPDATE_PATTERN =
+        "Updating lines for file: ";
+
     /** The base dir. */
     private Path baseDir;
 
@@ -268,6 +271,31 @@ public class QualityEvaluator {
             referenceChanges.removeAll(previousReferenceLines);
 
             if (this.variabilityEvaluationMode) {
+
+                // remove all entries resulting of line updates from reference
+                // result
+
+                String fileName = incrementalResult.getName()
+                    .replace("output", "log").replace(".csv", ".log");
+                Path pathToIncrementalLog =
+                    this.baseDir.resolve(LOG_INCREMENTAL_DIR + "/" + fileName);
+                List<String> logLines =
+                    Files.readAllLines(pathToIncrementalLog);
+
+                for (String line : logLines) {
+                    if (line.contains(LOG_LINE_UPDATE_PATTERN)) {
+                        String updatedFile =
+                            line.substring(line.indexOf(LOG_LINE_UPDATE_PATTERN)
+                                + LOG_LINE_UPDATE_PATTERN.length());
+                        for (int i = 0; i < referenceChanges.size(); i++) {
+                            if (referenceChanges.get(i).startsWith(updatedFile)) {
+                                referenceChanges.remove(i);
+                                i--;
+                            }
+                        }
+                    }
+                }
+
                 // remove all lines that represent non-variability relevant
                 // information
                 referenceChanges = removeNonVariabilityLines(referenceChanges);
