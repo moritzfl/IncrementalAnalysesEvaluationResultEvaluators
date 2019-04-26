@@ -56,6 +56,13 @@ java -jar QualityEvaluator.jar -c "/path/to/rootfolder_of_kernelhaven_execution"
 java -jar QualityEvaluator.jar -change "/path/to/rootfolder_of_kernelhaven_execution"
 ```
 
+Block-Change-mode
+
+```
+java -jar QualityEvaluator.jar -bc "/path/to/rootfolder_of_kernelhaven_execution"
+java -jar QualityEvaluator.jar -blockchange "/path/to/rootfolder_of_kernelhaven_execution"
+```
+
 Variability-mode
 
 ```
