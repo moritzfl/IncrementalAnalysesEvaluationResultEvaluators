@@ -30,7 +30,7 @@ Executing QualityEvaluator checks consistency of the results of the incremental 
 - The result for a diff file is marked as EQUIVALENT, if the incremental result contains all lines that were modified compared to the results for the previous diff file in the reference execution. However the incremental result must not contain any lines that are not present in the reference result for the same diff file.
 - If the result is neither SAME nor EQUIVALENT, it is marked as DIFFERENT
 
-*Rationale: A configuration that considers changes of any kind to be relevant for the analysis results in the processing of all of those changes. Therefore we can expect the result to contain every new entry. The result may however contain more than only the new entries. This is because a change to a file does not necessarily modify the code blocks within the file.*
+*Rationale: A configuration that considers changes of any kind to be relevant for the analysis results in the processing of all of those changes. Therefore we can expect the result to contain every new entry. The result may however contain more than only the new entries. This is because a change to a file does not necessarily modify the code blocks within the file. Furthermore a change to build or variability files results in a complete analysis that identifies dead code blocks within the entire code model.*
 
 #### Block-Change-mode:
 - The result for a diff file is marked as SAME, if both result files only include identical lines
