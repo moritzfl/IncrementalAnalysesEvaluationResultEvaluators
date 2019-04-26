@@ -46,6 +46,8 @@ Executing QualityEvaluator checks consistency of the results of the incremental 
 
 *Rationale: A configuration that only considers changes to blocks that depend on variables of the variability model will find every new dead code block that is related to variability. In our evaluation on the Linux-Kernel this means that we only consider blocks with a CONFIG_ variable to be relevant results. Similar to the Block-Change-mode, it will not output blocks where only the line number has changed.*
 
+
+#### Execution of QualityEvaluator
 The execution of the QualityEvaluator can be achieved through a command line call:
 
 Change-mode (default)
