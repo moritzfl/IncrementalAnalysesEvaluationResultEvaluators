@@ -23,7 +23,7 @@ The Evaluation-tools (QualityEvaluator, PerformanceEvaluator) assume identical f
 
 ### QualityEvaluator
 
-Executing QualityEvaluator checks consistency of the results of the incremental analysis execution compared to the reference execution. There are two implemented modes for result evaluation. Note that for our publication we do not solely rely on this automated consistency checks but also perform additional manual checks.
+Executing QualityEvaluator checks consistency of the results of the incremental analysis execution compared to the reference execution. There are three implemented modes for result evaluation. Note that for our publication we do not solely rely on this automated consistency checks but also perform additional manual checks.
 
 #### Change-mode:
 - The result for a diff file is marked as SAME, if both result files only include identical lines
