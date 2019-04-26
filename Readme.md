@@ -19,7 +19,7 @@ java -jar DiffGenerator.jar
 
 ## ResultEvaluators
 
-The Evaluation-tools (QualityEvaluator, PerformanceEvaluator) assume identical folder structuring to what the configuration and bash-scripts in [IncrementalAnalysesEvaluation](https://github.com/moritzfl/IncrementalAnalysesEvaluation) define. They also assumes a complete set of output-files within the result, time and log directory for both incremental and reference execution. 
+The evaluation tools (QualityEvaluator, PerformanceEvaluator) assume identical folder structuring to what the configuration and bash-scripts in [IncrementalAnalysesEvaluation](https://github.com/moritzfl/IncrementalAnalysesEvaluation) define. They also assume a complete set of output-files within the result, time and log directory for both incremental and reference execution. 
 
 ### QualityEvaluator
 
