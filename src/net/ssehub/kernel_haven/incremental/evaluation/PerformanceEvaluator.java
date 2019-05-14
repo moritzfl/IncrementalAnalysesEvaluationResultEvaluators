@@ -245,7 +245,7 @@ public class PerformanceEvaluator {
         long accumulatedExtractionDuration = 0;
         long accumulatedOverlap = 0;
         long accumulatedAnalysisDuration = 0;
-        long accumulatedTimeBetweenExtractionAndAnalysis = 0;
+        long accumulatedPostExtractionDuration = 0;
         long accumulatedPreparationTime = 0;
 
         int numberOfValues = keySet.size();
@@ -266,7 +266,7 @@ public class PerformanceEvaluator {
             long currentExtractionDuration =
                     getTimeInSeconds(incrResult.getStartExtractionPhase(), incrResult.getEndExtractionPhase());
 
-            long currentTimeBetweenExtractionAndAnalysis =
+            long currentPostExtractionDuration =
                     getTimeInSeconds(incrResult.getEndExtractionPhase(), incrResult.getStartAnalysisPhase());
 
             long currentAnalysisTime =
@@ -274,12 +274,14 @@ public class PerformanceEvaluator {
 
             long currentOverlap =
                     getTimeInSeconds(incrResult.getStartAnalysisPhase(), incrResult.getEndExtractionPhase());
+            
+            
 
             accumulatedSetupDuration += currentSetupDuration;
             accumulatedExtractionDuration += currentExtractionDuration;
             accumulatedOverlap += currentOverlap;
             accumulatedAnalysisDuration += currentAnalysisTime;
-            accumulatedTimeBetweenExtractionAndAnalysis += currentTimeBetweenExtractionAndAnalysis;
+            accumulatedPostExtractionDuration += currentPostExtractionDuration;
             accumulatedPreparationTime += currentPreparationDuration;
             accumulatedDuration += currentDuration;
             if (maxDuration < currentDuration) {
@@ -303,17 +305,17 @@ public class PerformanceEvaluator {
         LOGGER.logInfo("Accumulated duration: " + (int) Math.floor(accumulatedDuration / 60) + "min "
                 + accumulatedDuration % 60 + "s");
 
-        LOGGER.logInfo("Accumulated values: setup=" + accumulatedSetupDuration + " preparation="
-                + accumulatedPreparationTime + " extraction=" + accumulatedExtractionDuration + " analysis="
-                + accumulatedAnalysisDuration + " overlap=" + accumulatedOverlap + " post-extraction="
-                + accumulatedTimeBetweenExtractionAndAnalysis);
+        LOGGER.logInfo(
+                "Accumulated values: setup=" + accumulatedSetupDuration + " preparation=" + accumulatedPreparationTime
+                        + " extraction=" + accumulatedExtractionDuration + " analysis=" + accumulatedAnalysisDuration
+                        + " overlap=" + accumulatedOverlap + " post-extraction=" + accumulatedPostExtractionDuration);
 
         LOGGER.logInfo("Average values: setup=" + ((double) accumulatedSetupDuration) / ((double) numberOfValues)
                 + " preparation=" + ((double) accumulatedPreparationTime) / ((double) numberOfValues) + " extraction="
                 + ((double) accumulatedExtractionDuration) / ((double) numberOfValues) + " analysis="
                 + ((double) accumulatedAnalysisDuration) / ((double) numberOfValues) + " overlap="
                 + ((double) accumulatedOverlap) / ((double) numberOfValues) + " post-extraction="
-                + ((double) accumulatedTimeBetweenExtractionAndAnalysis) / ((double) numberOfValues));
+                + ((double) accumulatedPostExtractionDuration) / ((double) numberOfValues));
 
     }
     // CHECKSTYLE:ON
@@ -447,6 +449,8 @@ public class PerformanceEvaluator {
             LocalDateTime startAnalysisPhase = null;
             LocalDateTime endAnalysisPhase = null;
             LocalDateTime endTime = null;
+            LocalDateTime startPostExtractionPhase = null;
+            LocalDateTime endPostExtractionPhase = null;
             boolean partial = false;
 
             // read line within loop so that it is not visible outside
@@ -464,17 +468,21 @@ public class PerformanceEvaluator {
                     startPreparationPhase = currentTime;
                 } else if (currentLine.contains("IncrementalPreparation duration:")) {
                     finishPreparationPhase = currentTime;
-                } else if (startExtractionPhase == null && currentLine.contains("ExtractorThread]")) {
+                } else if (startExtractionPhase == null && currentLine.contains("Extractor-")) {
                     startExtractionPhase = currentTime;
-                } else if (currentLine.contains("ExtractorThread] All threads done")) {
+                } else if ((currentLine.contains("Extractor") && currentLine.contains("finished"))
+                        || currentLine.contains("ExtractorDataDuplicator")) {
                     endExtractionPhase = currentTime;
-                } else if (startAnalysisPhase == null
-                        && (currentLine.contains("[info   ] [OrderPreservingParallelizer-Worker")
-                                || currentLine.contains("DeadCodeFinder] Couldn't get models"))) {
-                    startAnalysisPhase = currentTime;
                 } else if (currentLine.contains("[info   ] [Setup] Analysis has finished")) {
                     endAnalysisPhase = currentTime;
+                } else if (currentLine.contains(
+                        "[IncrementalPostExtraction] Analysis component IncrementalPostExtraction starting")) {
+                    startPostExtractionPhase = currentTime;
+                } else if (currentLine
+                        .contains("[IncrementalPostExtraction] Analysis component IncrementalPostExtraction done")) {
+                    endPostExtractionPhase = currentTime;
                 }
+
                 if (currentLine.matches(".*Analysis component .* done")) {
                     Pattern componentPattern = Pattern.compile(".*Analysis component (.*) done");
                     Matcher componentMatcher = componentPattern.matcher(currentLine);
@@ -488,12 +496,22 @@ public class PerformanceEvaluator {
                 }
                 currentLine = nextLine;
             }
+
+            if (endPostExtractionPhase != null) {
+                startAnalysisPhase = endPostExtractionPhase;
+            } else {
+                startAnalysisPhase = endExtractionPhase;
+            }
+
             endTime = currentTime;
             result.setEndAnalysisPhase(endAnalysisPhase);
             result.setStartAnalysisPhase(startAnalysisPhase);
             result.setEndExtractionPhase(endExtractionPhase);
             result.setStartPreparationPhase(startPreparationPhase);
             result.setStartExtractionPhase(startExtractionPhase);
+
+            result.setStartPostExtractionPhase(startPostExtractionPhase);
+            result.setEndPostExtractionPhase(endPostExtractionPhase);
             result.setEndPreparationPhase(finishPreparationPhase);
             result.setEndTime(endTime);
             result.setStartTime(startTime);

@@ -40,11 +40,14 @@ public class PerformanceResult {
     /** The start time. */
     private LocalDateTime startTime;
 
+    private LocalDateTime startPostExtractionPhase = null;
+
+    private LocalDateTime endPostExtractionPhase;;
+
     /**
      * Instantiates a new performance result.
      *
-     * @param diffFileName
-     *            the diff file name
+     * @param diffFileName the diff file name
      */
     public PerformanceResult(String diffFileName) {
         this.setDiffFileName(diffFileName);
@@ -62,8 +65,7 @@ public class PerformanceResult {
     /**
      * Sets the start preparation phase.
      *
-     * @param startPreparationPhase
-     *            the new start preparation phase
+     * @param startPreparationPhase the new start preparation phase
      */
     public void setStartPreparationPhase(LocalDateTime startPreparationPhase) {
         this.startPreparationPhase = startPreparationPhase;
@@ -81,8 +83,7 @@ public class PerformanceResult {
     /**
      * Sets the finish preparation phase.
      *
-     * @param finishPreparationPhase
-     *            the new finish preparation phase
+     * @param finishPreparationPhase the new finish preparation phase
      */
     public void setEndPreparationPhase(LocalDateTime finishPreparationPhase) {
         this.finishPreparationPhase = finishPreparationPhase;
@@ -100,8 +101,7 @@ public class PerformanceResult {
     /**
      * Sets the start extraction phase.
      *
-     * @param startExtractionPhase
-     *            the new start extraction phase
+     * @param startExtractionPhase the new start extraction phase
      */
     public void setStartExtractionPhase(LocalDateTime startExtractionPhase) {
         this.startExtractionPhase = startExtractionPhase;
@@ -119,8 +119,7 @@ public class PerformanceResult {
     /**
      * Sets the end extraction phase.
      *
-     * @param endExtractionPhase
-     *            the new end extraction phase
+     * @param endExtractionPhase the new end extraction phase
      */
     public void setEndExtractionPhase(LocalDateTime endExtractionPhase) {
         this.endExtractionPhase = endExtractionPhase;
@@ -138,8 +137,7 @@ public class PerformanceResult {
     /**
      * Sets the start analysis phase.
      *
-     * @param startAnalysisPhase
-     *            the new start analysis phase
+     * @param startAnalysisPhase the new start analysis phase
      */
     public void setStartAnalysisPhase(LocalDateTime startAnalysisPhase) {
         this.startAnalysisPhase = startAnalysisPhase;
@@ -157,8 +155,7 @@ public class PerformanceResult {
     /**
      * Sets the end analysis phase.
      *
-     * @param endAnalysisPhase
-     *            the new end analysis phase
+     * @param endAnalysisPhase the new end analysis phase
      */
     public void setEndAnalysisPhase(LocalDateTime endAnalysisPhase) {
         this.endAnalysisPhase = endAnalysisPhase;
@@ -176,8 +173,7 @@ public class PerformanceResult {
     /**
      * Sets the end time.
      *
-     * @param endTime
-     *            the new end time
+     * @param endTime the new end time
      */
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
@@ -195,8 +191,7 @@ public class PerformanceResult {
     /**
      * Sets the diff file name.
      *
-     * @param diffFileName
-     *            the new diff file name
+     * @param diffFileName the new diff file name
      */
     public void setDiffFileName(String diffFileName) {
         this.diffFileName = diffFileName;
@@ -205,8 +200,7 @@ public class PerformanceResult {
     /**
      * Sets the start time.
      *
-     * @param startTime
-     *            the new start time
+     * @param startTime the new start time
      */
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
@@ -226,13 +220,10 @@ public class PerformanceResult {
     /**
      * NOT IMPLEMENTED: Adds the analysis component time.
      * 
-     * @param finishedComponent
-     *            the finished component
-     * @param componentTime
-     *            the component time
+     * @param finishedComponent the finished component
+     * @param componentTime     the component time
      */
-    public void addAnalysisComponentTime(String finishedComponent,
-        long componentTime) {
+    public void addAnalysisComponentTime(String finishedComponent, long componentTime) {
         // NOT IMPLEMENTED
 
     }
@@ -249,11 +240,36 @@ public class PerformanceResult {
     /**
      * Sets whether the result stems from a partial analysis.
      *
-     * @param partialAnalysis
-     *            defines whether a partial analysis was performed
+     * @param partialAnalysis defines whether a partial analysis was performed
      */
     public void setPartialAnalysis(boolean partialAnalysis) {
         this.partialAnalysis = partialAnalysis;
+    }
+
+    public void setStartPostExtractionPhase(LocalDateTime startPostExtractionPhase) {
+        this.startPostExtractionPhase = startPostExtractionPhase;
+
+    }
+
+    public LocalDateTime getFinishPreparationPhase() {
+        return finishPreparationPhase;
+    }
+
+    public void setFinishPreparationPhase(LocalDateTime finishPreparationPhase) {
+        this.finishPreparationPhase = finishPreparationPhase;
+    }
+
+    public LocalDateTime getStartPostExtractionPhase() {
+        return startPostExtractionPhase;
+    }
+
+    public LocalDateTime getEndPostExtractionPhase() {
+        return endPostExtractionPhase;
+    }
+
+    public void setEndPostExtractionPhase(LocalDateTime endPostExtractionPhase) {
+        this.endPostExtractionPhase = endPostExtractionPhase;
+
     }
 
 }

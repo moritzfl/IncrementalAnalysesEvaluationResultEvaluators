@@ -224,11 +224,36 @@ public class QualityEvaluator {
             previousReferenceLines = new ArrayList<String>();
         }
 
+        if (this.mode.equals(Mode.BLOCK_CHANGE)) {
+            LOGGER.logInfo(
+                    "Removing identified blocks wrapping the file contents from both reference and incremental results. "
+                            + "Those blocks were inserted by the extractor and do not represent actual code blocks.");
+            for (int i = 0; i < referenceLines.size(); i++) {
+                String[] parts = referenceLines.get(i).split(";");
+                // If the block starts at line 1 and has the presence condition 1, we assume
+                // that it is a block inserted by the extractor around the entire file
+                if (parts[parts.length - 1].equals("1") && parts[parts.length - 3].equals("1")) {
+                    referenceLines.remove(i);
+                    i--;
+                }
+            }
+            for (int i = 0; i < incrementalLines.size(); i++) {
+                String[] parts = incrementalLines.get(i).split(";");
+                // If the block starts at line 1 and has the presence condition 1, we assume
+                // that it is a block inserted by the extractor around the entire file
+                if (parts[parts.length - 1].equals("1") && parts[parts.length - 3].equals("1")) {
+                    incrementalLines.remove(i);
+                    i--;
+                }
+            }
+        }
+
         /*
          * first make sure that the result of the reference analysis contains all
          * entries that the incremental analysis produced
          */
         boolean isEquivalent = referenceLines.containsAll(incrementalLines);
+
         if (isEquivalent) {
             /*
              * check if the result of the incremental analysis covers all lines that changed
@@ -292,7 +317,7 @@ public class QualityEvaluator {
                         for (int i = 0; i < referenceChanges.size(); i++) {
                             if (referenceChanges.get(i).startsWith(updatedFile)) {
                                 LOGGER.logInfo("Found new entry in reference that is likely to be a line update: "
-                                        + referenceChanges);
+                                        + referenceChanges.get(i));
                                 referenceChanges.get(i);
                                 referenceChanges.remove(i);
                                 i--;
