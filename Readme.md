@@ -10,9 +10,9 @@ The tools included are:
 
 ## DiffGenerator
 
-This tool can be used to generate diff files representing every commit in a given range to a repository that you have checked out locally.
+This tool can be used to generate diff files representing every commit to the main branch in a given range to a repository that you have checked out locally. If a commit is a merge commit, it includes all changes of nested commits in the generated file.
 
-To launch it use:
+To launch it use the following command and follow the instructions on the command line. You need to have git installed on your system.
 ```
 java -jar DiffGenerator.jar
 ```
