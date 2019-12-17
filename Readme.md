@@ -25,7 +25,7 @@ The evaluation tools (QualityEvaluator, PerformanceEvaluator) assume identical f
 
 Executing QualityEvaluator checks consistency of the results of the incremental analysis execution compared to the reference execution. There are three implemented modes for result evaluation. Note that for our publication we do not solely rely on this automated consistency checks but also perform additional manual checks.
 
-#### Change-mode:
+#### Artifact-Change-mode:
 - The result for a diff file is marked as SAME, if both result files only include identical lines
 - The result for a diff file is marked as EQUIVALENT, if the incremental result contains all lines that were modified compared to the results for the previous diff file in the reference execution. However the incremental result must not contain any lines that are not present in the reference result for the same diff file.
 - If the result is neither SAME nor EQUIVALENT, it is marked as DIFFERENT
@@ -39,7 +39,7 @@ Executing QualityEvaluator checks consistency of the results of the incremental 
 
 *Rationale: A configuration that considers changes to block conditions will find every new dead code block. However, it will not output blocks where only the line number has changed as this could be due to the insertion of a comment or line of code within a block. In our perspective changes to lines of code within a code block are irrelevant as we only look at the change of block conditions.*
 
-#### Variability-mode:
+#### Configuration-Block-Change-mode:
 - The result for a diff file is marked as SAME, if both result files only include identical lines
 - The result for a diff file is marked as EQUIVALENT, if the incremental result contains all *variabillity-related* entries that were modified compared to the results for the previous diff file in the reference execution. However the incremental result must not contain any lines that are not present in the reference result for the same diff file. Entries where only the line number was changed are ignored.
 - If the result is neither SAME nor EQUIVALENT, it is marked as DIFFERENT
@@ -50,12 +50,12 @@ Executing QualityEvaluator checks consistency of the results of the incremental 
 #### Execution of QualityEvaluator
 The execution of the QualityEvaluator can be achieved through a command line call:
 
-Change-mode (default)
+Artifact-Change-mode (default)
 
 ```
 java -jar QualityEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution"
-java -jar QualityEvaluator.jar -c "/path/to/rootfolder_of_kernelhaven_execution"
-java -jar QualityEvaluator.jar -change "/path/to/rootfolder_of_kernelhaven_execution"
+java -jar QualityEvaluator.jar -ac "/path/to/rootfolder_of_kernelhaven_execution"
+java -jar QualityEvaluator.jar -artifactchange "/path/to/rootfolder_of_kernelhaven_execution"
 ```
 
 Block-Change-mode
@@ -65,11 +65,11 @@ java -jar QualityEvaluator.jar -bc "/path/to/rootfolder_of_kernelhaven_execution
 java -jar QualityEvaluator.jar -blockchange "/path/to/rootfolder_of_kernelhaven_execution"
 ```
 
-Variability-mode
+Configuration-Block-Change-mode
 
 ```
-java -jar QualityEvaluator.jar -v "/path/to/rootfolder_of_kernelhaven_execution"
-java -jar QualityEvaluator.jar -variability "/path/to/rootfolder_of_kernelhaven_execution"
+java -jar QualityEvaluator.jar -cbc "/path/to/rootfolder_of_kernelhaven_execution"
+java -jar QualityEvaluator.jar -configurationblockchange "/path/to/rootfolder_of_kernelhaven_execution"
 ```
 
 In order to write the evaluation result to your filesystem, use ``> quality.log`` on Unix systems:
@@ -94,3 +94,5 @@ In order to write the evaluation result to your filesystem, use ``> performance.
 ```
 java -jar PerformanceEvaluator.jar "/path/to/rootfolder_of_kernelhaven_execution" > performance.log
 ```
+
+The PerformanceEvaluator prints out lines with individual execution times separated  by semicoli. Those lines can be copied into a csv-file which can then serve as a basis for further inspection in tools like Microsoft Excel.
