@@ -89,6 +89,8 @@ public class PerformanceEvaluator {
 
 		LOGGER.logInfo("Logging data for partial analyses in incremental:");
 		logPartialExecutionData(incrementalResults);
+		logPartialExecutionDataForEffectivePartials(incrementalResults);
+		logPartialExecutionDataForEmptyPartials(incrementalResults);
 
 		LOGGER.logInfo("Logging data for non partial analyses in incremental:");
 		logNonPartialExecutionData(incrementalResults);
@@ -176,6 +178,88 @@ public class PerformanceEvaluator {
 
 		double avgPartialDuration = ((double) accumulatdPartial) / ((double) totalPartialCount);
 
+		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
+				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
+
+	}
+
+	/**
+	 * Log partial execution data.
+	 *
+	 * @param results the results
+	 */
+	private static void logPartialExecutionDataForEffectivePartials(Map<String, PerformanceResult> results) {
+		List<String> keySet = new ArrayList<String>(results.keySet());
+		Collections.sort(keySet);
+
+		long longerThan60sec = 0;
+		long longestPartial = 0;
+		long accumulatdPartial = 0;
+		long totalPartialCount = 0;
+
+		for (String key : keySet) {
+			PerformanceResult performanceResult = results.get(key);
+			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+					performanceResult.getEndTime());
+
+			if (performanceResult.isPartialAnalysis() && !performanceResult.isEmptyAnalysis()) {
+				totalPartialCount++;
+				accumulatdPartial += currentDuration;
+				if (currentDuration > longestPartial) {
+					longestPartial = currentDuration;
+				}
+
+				if (currentDuration > 60) {
+					longerThan60sec++;
+				}
+			}
+		}
+
+		double avgPartialDuration = ((double) accumulatdPartial) / ((double) totalPartialCount);
+
+		LOGGER.logInfo("The following data is for effective partial analyses that covered at least one source file:");
+		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
+				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
+
+	}
+
+	/**
+	 * Log partial execution data.
+	 *
+	 * @param results the results
+	 */
+	private static void logPartialExecutionDataForEmptyPartials(Map<String, PerformanceResult> results) {
+		List<String> keySet = new ArrayList<String>(results.keySet());
+		Collections.sort(keySet);
+
+		long longerThan60sec = 0;
+		long longestPartial = 0;
+		long accumulatdPartial = 0;
+		long totalPartialCount = 0;
+
+		for (String key : keySet) {
+			PerformanceResult performanceResult = results.get(key);
+			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+					performanceResult.getEndTime());
+
+			if (performanceResult.isPartialAnalysis() && performanceResult.isEmptyAnalysis()) {
+				totalPartialCount++;
+				accumulatdPartial += currentDuration;
+				if (currentDuration > longestPartial) {
+					longestPartial = currentDuration;
+				}
+
+				if (currentDuration > 60) {
+					longerThan60sec++;
+				}
+			}
+		}
+
+		double avgPartialDuration = ((double) accumulatdPartial) / ((double) totalPartialCount);
+
+		LOGGER.logInfo("The following data is for empty partial analyses that did not cover a single source file:");
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
 				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
@@ -452,6 +536,7 @@ public class PerformanceEvaluator {
 			LocalDateTime startPostExtractionPhase = null;
 			LocalDateTime endPostExtractionPhase = null;
 			boolean partial = false;
+			boolean emptyAnalysis = false;
 
 			// read line within loop so that it is not visible outside
 			// CHECKSTYLE:OFF
@@ -481,9 +566,9 @@ public class PerformanceEvaluator {
 				} else if (currentLine
 						.contains("[IncrementalPostExtraction] Analysis component IncrementalPostExtraction done")) {
 					endPostExtractionPhase = currentTime;
-				}
-
-				if (currentLine.matches(".*Analysis component .* done")) {
+				} else if (currentLine.contains("Analysis finished covering 0 source files.")) {
+					emptyAnalysis = true;
+				} else if (currentLine.matches(".*Analysis component .* done")) {
 					Pattern componentPattern = Pattern.compile(".*Analysis component (.*) done");
 					Matcher componentMatcher = componentPattern.matcher(currentLine);
 					componentMatcher.find();
@@ -509,6 +594,7 @@ public class PerformanceEvaluator {
 			result.setEndExtractionPhase(endExtractionPhase);
 			result.setStartPreparationPhase(startPreparationPhase);
 			result.setStartExtractionPhase(startExtractionPhase);
+			result.setEmptyAnalysis(emptyAnalysis);
 
 			result.setStartPostExtractionPhase(startPostExtractionPhase);
 			result.setEndPostExtractionPhase(endPostExtractionPhase);

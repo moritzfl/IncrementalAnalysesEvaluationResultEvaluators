@@ -2,7 +2,6 @@ package net.ssehub.kernel_haven.incremental.evaluation;
 
 import java.time.LocalDateTime;
 
-// TODO: Auto-generated Javadoc
 /**
  * Storage class for performance results.
  * 
@@ -42,7 +41,9 @@ public class PerformanceResult {
 
     private LocalDateTime startPostExtractionPhase = null;
 
-    private LocalDateTime endPostExtractionPhase;;
+    private LocalDateTime endPostExtractionPhase;
+
+	private boolean emptyAnalysis;;
 
     /**
      * Instantiates a new performance result.
@@ -236,6 +237,15 @@ public class PerformanceResult {
     public boolean isPartialAnalysis() {
         return partialAnalysis;
     }
+    
+    /**
+     * Checks if is empty analysis.
+     *
+     * @return true, if is empty analysis
+     */
+    public boolean isEmptyAnalysis() {
+        return emptyAnalysis;
+    }
 
     /**
      * Sets whether the result stems from a partial analysis.
@@ -244,6 +254,16 @@ public class PerformanceResult {
      */
     public void setPartialAnalysis(boolean partialAnalysis) {
         this.partialAnalysis = partialAnalysis;
+    }
+    
+    
+    /**
+     * Sets whether the result stems from a empty analysis.
+     *
+     * @param partialAnalysis defines whether an empty analysis was performed (= the analysis covered no source file)
+     */
+    public void setEmptyAnalysis(boolean emptyAnalysis) {
+        this.emptyAnalysis = emptyAnalysis;
     }
 
     public void setStartPostExtractionPhase(LocalDateTime startPostExtractionPhase) {
