@@ -43,7 +43,9 @@ public class PerformanceResult {
 
     private LocalDateTime endPostExtractionPhase;
 
-	private boolean emptyAnalysis;;
+	private boolean emptyAnalysis;
+
+	private long total = -1l;
 
     /**
      * Instantiates a new performance result.
@@ -291,5 +293,15 @@ public class PerformanceResult {
         this.endPostExtractionPhase = endPostExtractionPhase;
 
     }
+
+	public void setTotalTime(long total) {
+		this.total = total;
+		
+	}
+
+	public long getTotalTime() {
+		return total;
+	}
+
 
 }

@@ -118,6 +118,9 @@ public class PerformanceEvaluator {
 			PerformanceResult performanceResult = results.get(key);
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
+			if (performanceResult.getTotalTime() != -1) {
+				currentDuration = performanceResult.getTotalTime();
+			}
 
 			if (!performanceResult.isPartialAnalysis()) {
 				totalNonPartialCount++;
@@ -163,6 +166,9 @@ public class PerformanceEvaluator {
 			PerformanceResult performanceResult = results.get(key);
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
+			if (performanceResult.getTotalTime() != -1) {
+				currentDuration = performanceResult.getTotalTime();
+			}
 
 			if (performanceResult.isPartialAnalysis()) {
 				totalPartialCount++;
@@ -170,7 +176,7 @@ public class PerformanceEvaluator {
 				if (currentDuration > longestPartial) {
 					longestPartial = currentDuration;
 				}
-				
+
 				if (shortestPartial == -1 || shortestPartial > currentDuration) {
 					shortestPartial = currentDuration;
 				}
@@ -185,7 +191,8 @@ public class PerformanceEvaluator {
 
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: "
+				+ shortestPartial + "s");
 
 	}
 
@@ -208,6 +215,9 @@ public class PerformanceEvaluator {
 			PerformanceResult performanceResult = results.get(key);
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
+			if (performanceResult.getTotalTime() != -1) {
+				currentDuration = performanceResult.getTotalTime();
+			}
 
 			if (performanceResult.isPartialAnalysis() && !performanceResult.isEmptyAnalysis()) {
 				totalPartialCount++;
@@ -230,7 +240,8 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("The following data is for effective partial analyses that covered at least one source file:");
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: "
+				+ shortestPartial + "s");
 
 	}
 
@@ -253,6 +264,9 @@ public class PerformanceEvaluator {
 			PerformanceResult performanceResult = results.get(key);
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
+			if (performanceResult.getTotalTime() != -1) {
+				currentDuration = performanceResult.getTotalTime();
+			}
 
 			if (performanceResult.isPartialAnalysis() && performanceResult.isEmptyAnalysis()) {
 				totalPartialCount++;
@@ -260,7 +274,7 @@ public class PerformanceEvaluator {
 				if (currentDuration > longestPartial) {
 					longestPartial = currentDuration;
 				}
-				
+
 				if (shortestPartial == -1 || shortestPartial > currentDuration) {
 					shortestPartial = currentDuration;
 				}
@@ -276,7 +290,8 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("The following data is for empty partial analyses that did not cover a single source file:");
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: "
+				+ shortestPartial + "s");
 
 	}
 
@@ -305,6 +320,10 @@ public class PerformanceEvaluator {
 
 			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
+			
+			if (performanceResult.getTotalTime() != -1) {
+				currentDuration = performanceResult.getTotalTime();
+			}
 			times.add(Long.toString(currentDuration));
 		}
 
@@ -369,6 +388,9 @@ public class PerformanceEvaluator {
 
 			long currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
 					incrResult.getEndAnalysisPhase());
+			if (incrResult.getTotalTime() != -1) {
+				currentAnalysisTime = incrResult.getTotalTime();
+			}
 
 			long currentOverlap = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
 					incrResult.getEndExtractionPhase());
@@ -448,7 +470,14 @@ public class PerformanceEvaluator {
 			PerformanceResult incrResult = incrementalResults.get(key);
 			PerformanceResult refResult = referenceResults.get(key);
 			long refDuration = ChronoUnit.SECONDS.between(refResult.getStartTime(), refResult.getEndTime());
+			if (refResult.getTotalTime() != -1) {
+				refDuration = refResult.getTotalTime();
+			}
+			
 			long incrDuration = ChronoUnit.SECONDS.between(incrResult.getStartTime(), incrResult.getEndTime());
+			if (incrResult.getTotalTime() != -1) {
+				incrDuration = incrResult.getTotalTime();
+			}
 
 			if (refDuration < incrDuration) {
 				fasterReference.add(key + "(difference: " + (incrDuration - refDuration) + ", "
@@ -615,7 +644,31 @@ public class PerformanceEvaluator {
 			result.setEndPreparationPhase(finishPreparationPhase);
 			result.setEndTime(endTime);
 			result.setStartTime(startTime);
+
 			result.setPartialAnalysis(partial);
+		}
+
+		File timeFile = new File(logFile.getAbsolutePath().replace("[/\\\\]+log[/\\\\\\\\]+", "/time/")
+				.replace("[/\\\\\\\\]+log-", "/time-"));
+
+		try (BufferedReader br = new BufferedReader(new FileReader(timeFile))) {
+			for (String nextLine; (nextLine = br.readLine()) != null;) {
+				if (nextLine.contains("Elapsed (wall clock) time (h:mm:ss or m:ss): ")) {
+					Pattern componentPattern = Pattern.compile("((?<hour>\\d+):)?(?<minute>\\d+):(?<second>\\d+.\\d+)");
+					Matcher componentMatcher = componentPattern.matcher(nextLine);
+					componentMatcher.find();
+					long hour = Long.parseLong(componentMatcher.group("hour")) * 3600l;
+					long minute = Long.parseLong(componentMatcher.group("minute")) * 60l;
+					long second = Long.parseLong(componentMatcher.group("second"));
+					result.setTotalTime(hour + minute + second);
+				}
+				break;
+			}
+			if (result.getTotalTime() == -1) {
+				LOGGER.logError("Could not extract precise absolute execution times from: " + timeFile.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			LOGGER.logError("Could not extract precise absolute execution times from: " + timeFile.getAbsolutePath());
 		}
 
 	}
