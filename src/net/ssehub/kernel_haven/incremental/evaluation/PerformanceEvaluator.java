@@ -157,6 +157,7 @@ public class PerformanceEvaluator {
 		long longestPartial = 0;
 		long accumulatdPartial = 0;
 		long totalPartialCount = 0;
+		long shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
@@ -169,6 +170,10 @@ public class PerformanceEvaluator {
 				if (currentDuration > longestPartial) {
 					longestPartial = currentDuration;
 				}
+				
+				if (shortestPartial == -1 || shortestPartial > currentDuration) {
+					shortestPartial = currentDuration;
+				}
 
 				if (currentDuration > 60) {
 					longerThan60sec++;
@@ -180,7 +185,7 @@ public class PerformanceEvaluator {
 
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
 
 	}
 
@@ -197,6 +202,7 @@ public class PerformanceEvaluator {
 		long longestPartial = 0;
 		long accumulatdPartial = 0;
 		long totalPartialCount = 0;
+		long shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
@@ -208,6 +214,9 @@ public class PerformanceEvaluator {
 				accumulatdPartial += currentDuration;
 				if (currentDuration > longestPartial) {
 					longestPartial = currentDuration;
+				}
+				if (shortestPartial == -1 || shortestPartial > currentDuration) {
+					shortestPartial = currentDuration;
 				}
 
 				if (currentDuration > 60) {
@@ -221,7 +230,7 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("The following data is for effective partial analyses that covered at least one source file:");
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
 
 	}
 
@@ -238,6 +247,7 @@ public class PerformanceEvaluator {
 		long longestPartial = 0;
 		long accumulatdPartial = 0;
 		long totalPartialCount = 0;
+		long shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
@@ -249,6 +259,10 @@ public class PerformanceEvaluator {
 				accumulatdPartial += currentDuration;
 				if (currentDuration > longestPartial) {
 					longestPartial = currentDuration;
+				}
+				
+				if (shortestPartial == -1 || shortestPartial > currentDuration) {
+					shortestPartial = currentDuration;
 				}
 
 				if (currentDuration > 60) {
@@ -262,7 +276,7 @@ public class PerformanceEvaluator {
 		LOGGER.logInfo("The following data is for empty partial analyses that did not cover a single source file:");
 		LOGGER.logInfo("PartialAccumulatedDuration:" + accumulatdPartial + "s PartialAnalysisCount: "
 				+ totalPartialCount + " PartialAnalysesLongerThan60s: " + longerThan60sec + " AveragePartialDuration: "
-				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s");
+				+ avgPartialDuration + "s LongestPartialDuration: " + longestPartial + "s ShortestPartialDuration: " + shortestPartial + "s");
 
 	}
 
