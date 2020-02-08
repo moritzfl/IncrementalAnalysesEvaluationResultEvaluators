@@ -377,7 +377,7 @@ public class PerformanceEvaluator {
 
 		for (String key : keySet) {
 			PerformanceResult incrResult = results.get(key);
-			long currentDuration = getTimeInSeconds(incrResult.getStartTime(), incrResult.getEndTime());
+			double currentDuration = getTimeInSeconds(incrResult.getStartTime(), incrResult.getEndTime());
 			long currentSetupDuration = getTimeInSeconds(incrResult.getStartTime(),
 					incrResult.getStartExtractionPhase());
 			long currentPreparationDuration = getTimeInSeconds(incrResult.getStartPreparationPhase(),
@@ -389,11 +389,11 @@ public class PerformanceEvaluator {
 			long currentPostExtractionDuration = getTimeInSeconds(incrResult.getEndExtractionPhase(),
 					incrResult.getStartAnalysisPhase());
 
-			double currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
+			long currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
 					incrResult.getEndAnalysisPhase());
 
 			if (incrResult.getTotalTime() != -1) {
-				currentAnalysisTime = incrResult.getTotalTime();
+				currentDuration = incrResult.getTotalTime();
 			}
 
 			long currentOverlap = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
