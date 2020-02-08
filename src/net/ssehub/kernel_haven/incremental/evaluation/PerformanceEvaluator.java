@@ -357,7 +357,7 @@ public class PerformanceEvaluator {
 	// CHECKSTYLE:OFF
 	private static void logGenericDurations(Map<String, PerformanceResult> results) {
 
-		long accumulatedDuration = 0;
+		double accumulatedDuration = 0;
 		List<String> keySet = new ArrayList<String>(results.keySet());
 		Collections.sort(keySet);
 
@@ -369,8 +369,8 @@ public class PerformanceEvaluator {
 		long accumulatedPreparationTime = 0;
 
 		int numberOfValues = keySet.size();
-		long maxDuration = 0;
-		long minDuration = -1;
+		double maxDuration = 0;
+		double minDuration = -1;
 
 		PerformanceResult maxResult = null;
 		PerformanceResult minResult = null;
@@ -391,7 +391,7 @@ public class PerformanceEvaluator {
 
 			double currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
 					incrResult.getEndAnalysisPhase());
-			
+
 			if (incrResult.getTotalTime() != -1) {
 				currentAnalysisTime = incrResult.getTotalTime();
 			}
@@ -417,15 +417,11 @@ public class PerformanceEvaluator {
 			}
 		}
 
-		long averageDuration = accumulatedDuration / numberOfValues;
-		LOGGER.logInfo(
-				"Average duration: " + (int) Math.floor(averageDuration / 60) + "min " + averageDuration % 60 + "s");
-		LOGGER.logInfo("Maximum duration: " + (int) Math.floor(maxDuration / 60) + "min " + maxDuration % 60 + "s  for "
-				+ maxResult.getDiffFileName());
-		LOGGER.logInfo("Minimum duration: " + (int) Math.floor(minDuration / 60) + "min " + minDuration % 60 + "s  for "
-				+ minResult.getDiffFileName());
-		LOGGER.logInfo("Accumulated duration: " + (int) Math.floor(accumulatedDuration / 60) + "min "
-				+ accumulatedDuration % 60 + "s");
+		double averageDuration = accumulatedDuration / numberOfValues;
+		LOGGER.logInfo("Average duration: " + averageDuration + "s");
+		LOGGER.logInfo("Maximum duration: " + maxDuration + "s  for " + maxResult.getDiffFileName());
+		LOGGER.logInfo("Minimum duration: " + minDuration + "s  for " + minResult.getDiffFileName());
+		LOGGER.logInfo("Accumulated duration: " + accumulatedDuration + "s");
 
 		LOGGER.logInfo(
 				"Accumulated values: setup=" + accumulatedSetupDuration + " preparation=" + accumulatedPreparationTime
@@ -445,7 +441,7 @@ public class PerformanceEvaluator {
 	/**
 	 * Gets the deviation between two long values in percent.
 	 *
-	 * @param refDuration the this value
+	 * @param refDuration  the this value
 	 * @param incrDuration the that value
 	 * @return the deviation in percent
 	 */
