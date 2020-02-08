@@ -45,7 +45,7 @@ public class PerformanceResult {
 
 	private boolean emptyAnalysis;
 
-	private long total = -1l;
+	private double total = -1d;
 
     /**
      * Instantiates a new performance result.
@@ -294,12 +294,12 @@ public class PerformanceResult {
 
     }
 
-	public void setTotalTime(long total) {
-		this.total = total;
+	public void setTotalTime(double d) {
+		this.total = d;
 		
 	}
 
-	public long getTotalTime() {
+	public double getTotalTime() {
 		return total;
 	}
 

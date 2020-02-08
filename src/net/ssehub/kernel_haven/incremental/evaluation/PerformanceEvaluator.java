@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -14,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
@@ -109,14 +112,14 @@ public class PerformanceEvaluator {
 		Collections.sort(keySet);
 
 		long shorterThan60sec = 0;
-		long longestNonPartial = 0;
-		long accumulatedNonPartial = 0;
+		double longestNonPartial = 0;
+		double accumulatedNonPartial = 0;
 		long totalNonPartialCount = 0;
-		long shortestNonPartial = -1;
+		double shortestNonPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
-			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+			double currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
 			if (performanceResult.getTotalTime() != -1) {
 				currentDuration = performanceResult.getTotalTime();
@@ -157,14 +160,14 @@ public class PerformanceEvaluator {
 		Collections.sort(keySet);
 
 		long longerThan60sec = 0;
-		long longestPartial = 0;
-		long accumulatdPartial = 0;
+		double longestPartial = 0;
+		double accumulatdPartial = 0;
 		long totalPartialCount = 0;
-		long shortestPartial = -1;
+		double shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
-			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+			double currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
 			if (performanceResult.getTotalTime() != -1) {
 				currentDuration = performanceResult.getTotalTime();
@@ -206,14 +209,14 @@ public class PerformanceEvaluator {
 		Collections.sort(keySet);
 
 		long longerThan60sec = 0;
-		long longestPartial = 0;
-		long accumulatdPartial = 0;
+		double longestPartial = 0;
+		double accumulatdPartial = 0;
 		long totalPartialCount = 0;
-		long shortestPartial = -1;
+		double shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
-			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+			double currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
 			if (performanceResult.getTotalTime() != -1) {
 				currentDuration = performanceResult.getTotalTime();
@@ -255,14 +258,14 @@ public class PerformanceEvaluator {
 		Collections.sort(keySet);
 
 		long longerThan60sec = 0;
-		long longestPartial = 0;
-		long accumulatdPartial = 0;
+		double longestPartial = 0;
+		double accumulatdPartial = 0;
 		long totalPartialCount = 0;
-		long shortestPartial = -1;
+		double shortestPartial = -1;
 
 		for (String key : keySet) {
 			PerformanceResult performanceResult = results.get(key);
-			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+			double currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
 			if (performanceResult.getTotalTime() != -1) {
 				currentDuration = performanceResult.getTotalTime();
@@ -318,13 +321,13 @@ public class PerformanceEvaluator {
 				LOGGER.logError("EndTime for " + key + " was null");
 			}
 
-			long currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
+			double currentDuration = ChronoUnit.SECONDS.between(performanceResult.getStartTime(),
 					performanceResult.getEndTime());
-			
+
 			if (performanceResult.getTotalTime() != -1) {
 				currentDuration = performanceResult.getTotalTime();
 			}
-			times.add(Long.toString(currentDuration));
+			times.add(Double.toString(currentDuration));
 		}
 
 		LOGGER.logInfo("Execution times: " + times.toString());
@@ -386,8 +389,9 @@ public class PerformanceEvaluator {
 			long currentPostExtractionDuration = getTimeInSeconds(incrResult.getEndExtractionPhase(),
 					incrResult.getStartAnalysisPhase());
 
-			long currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
+			double currentAnalysisTime = getTimeInSeconds(incrResult.getStartAnalysisPhase(),
 					incrResult.getEndAnalysisPhase());
+			
 			if (incrResult.getTotalTime() != -1) {
 				currentAnalysisTime = incrResult.getTotalTime();
 			}
@@ -441,13 +445,13 @@ public class PerformanceEvaluator {
 	/**
 	 * Gets the deviation between two long values in percent.
 	 *
-	 * @param thisValue the this value
-	 * @param thatValue the that value
+	 * @param refDuration the this value
+	 * @param incrDuration the that value
 	 * @return the deviation in percent
 	 */
-	private static double getDeviationInPercent(long thisValue, long thatValue) {
-		double thisValueDouble = thisValue;
-		double thatValueDouble = thatValue;
+	private static double getDeviationInPercent(double refDuration, double incrDuration) {
+		double thisValueDouble = refDuration;
+		double thatValueDouble = incrDuration;
 		double percent = 100d - thisValueDouble / thatValueDouble * 100d;
 		return percent;
 	}
@@ -469,12 +473,12 @@ public class PerformanceEvaluator {
 		for (String key : referenceResults.keySet()) {
 			PerformanceResult incrResult = incrementalResults.get(key);
 			PerformanceResult refResult = referenceResults.get(key);
-			long refDuration = ChronoUnit.SECONDS.between(refResult.getStartTime(), refResult.getEndTime());
+			double refDuration = ChronoUnit.SECONDS.between(refResult.getStartTime(), refResult.getEndTime());
 			if (refResult.getTotalTime() != -1) {
 				refDuration = refResult.getTotalTime();
 			}
-			
-			long incrDuration = ChronoUnit.SECONDS.between(incrResult.getStartTime(), incrResult.getEndTime());
+
+			double incrDuration = ChronoUnit.SECONDS.between(incrResult.getStartTime(), incrResult.getEndTime());
 			if (incrResult.getTotalTime() != -1) {
 				incrDuration = incrResult.getTotalTime();
 			}
@@ -648,8 +652,8 @@ public class PerformanceEvaluator {
 			result.setPartialAnalysis(partial);
 		}
 
-		File timeFile = new File(logFile.getAbsolutePath().replace("[/\\\\]+log[/\\\\\\\\]+", "/time/")
-				.replace("[/\\\\\\\\]+log-", "/time-"));
+		File timeFile = new File(logFile.getAbsolutePath().replaceAll("[/\\\\]log[/\\\\]", "/time/")
+				.replaceAll("[/\\\\]log-", "/time-"));
 
 		try (BufferedReader br = new BufferedReader(new FileReader(timeFile))) {
 			for (String nextLine; (nextLine = br.readLine()) != null;) {
@@ -657,20 +661,42 @@ public class PerformanceEvaluator {
 					Pattern componentPattern = Pattern.compile("((?<hour>\\d+):)?(?<minute>\\d+):(?<second>\\d+.\\d+)");
 					Matcher componentMatcher = componentPattern.matcher(nextLine);
 					componentMatcher.find();
-					long hour = Long.parseLong(componentMatcher.group("hour")) * 3600l;
-					long minute = Long.parseLong(componentMatcher.group("minute")) * 60l;
-					long second = Long.parseLong(componentMatcher.group("second"));
+
+					double hour = 0;
+					if (componentMatcher.group("hour") != null) {
+						hour = parseDouble(componentMatcher.group("hour")) * 3600l;
+					}
+
+					double minute = 0;
+					if (componentMatcher.group("minute") != null) {
+						hour = parseDouble(componentMatcher.group("minute")) * 60l;
+					}
+
+					double second = parseDouble(componentMatcher.group("second"));
 					result.setTotalTime(hour + minute + second);
+					break;
 				}
-				break;
 			}
 			if (result.getTotalTime() == -1) {
-				LOGGER.logError("Could not extract precise absolute execution times from: " + timeFile.getAbsolutePath());
+				LOGGER.logError(
+						"Could not extract precise absolute execution times from: " + timeFile.getAbsolutePath());
 			}
 		} catch (Exception e) {
 			LOGGER.logError("Could not extract precise absolute execution times from: " + timeFile.getAbsolutePath());
+			e.printStackTrace();
 		}
 
+	}
+
+	private double parseDouble(String text) {
+		NumberFormat format = NumberFormat.getInstance(Locale.US);
+		Number number = 0;
+		try {
+			number = format.parse(text);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return number.doubleValue();
 	}
 
 }
